@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lotería · Analizador</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600&display=swap');
+:root{--bg:#0a0a0f;--surface:#12121a;--card:#1a1a26;--border:#2a2a3a;--text:#e8e8f0;--muted:#7070a0}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:30px 20px 60px}
+
+.header{text-align:center;margin-bottom:44px}
+.header h1{
+  font-family:'Bebas Neue',sans-serif;font-size:3.6rem;letter-spacing:8px;
+  background:linear-gradient(135deg,#f0c040,#e08020,#e03060);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;line-height:1;
+}
+.header p{color:var(--muted);font-size:.78rem;margin-top:10px;letter-spacing:2px;text-transform:uppercase}
+
+.juegos-grid{display:flex;flex-direction:column;gap:14px;width:100%;max-width:380px}
+
+.juego-card{
+  background:var(--card);border:1px solid var(--border);border-radius:20px;
+  padding:22px 20px;cursor:pointer;transition:all .22s;
+  display:flex;align-items:center;gap:16px;
+  text-decoration:none;color:var(--text);
+}
+.juego-card:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(0,0,0,.5)}
+.juego-card:active{transform:translateY(0)}
+
+.juego-card.tris{border-color:rgba(240,192,64,.25)}
+.juego-card.tris:hover{border-color:rgba(240,192,64,.7);background:#15140a}
+.juego-card.melate{border-color:rgba(232,160,32,.25)}
+.juego-card.melate:hover{border-color:rgba(232,160,32,.7);background:#14100a}
+.juego-card.chispazo{border-color:rgba(224,48,96,.25)}
+.juego-card.chispazo:hover{border-color:rgba(224,48,96,.7);background:#140a0e}
+
+.juego-emoji{font-size:2.6rem;line-height:1}
+.juego-info{flex:1}
+.juego-nombre{font-family:'Bebas Neue',sans-serif;font-size:1.7rem;letter-spacing:3px;line-height:1;margin-bottom:5px}
+.tris .juego-nombre{color:#f0c040}
+.melate .juego-nombre{color:#e8a020}
+.chispazo .juego-nombre{color:#e03060}
+.juego-desc{font-size:.72rem;color:var(--muted);line-height:1.4}
+.juego-arrow{font-size:1.4rem;color:var(--muted);transition:transform .2s}
+.juego-card:hover .juego-arrow{transform:translateX(5px)}
+
+.footer{margin-top:40px;text-align:center;font-size:.66rem;color:var(--muted);line-height:1.8;opacity:.7}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>LOTERÍA</h1>
+  <p>Analizador de Números</p>
+</div>
+
+<div class="juegos-grid">
+  <a class="juego-card tris" href="tris-analizador.html">
+    <div class="juego-emoji">🎯</div>
+    <div class="juego-info">
+      <div class="juego-nombre">TRIS</div>
+      <div class="juego-desc">5 números del 0–9 · 5 sorteos diarios por horario</div>
+    </div>
+    <div class="juego-arrow">›</div>
+  </a>
+
+  <a class="juego-card melate" href="melate-analizador.html">
+    <div class="juego-emoji">🍀</div>
+    <div class="juego-info">
+      <div class="juego-nombre">MELATE</div>
+      <div class="juego-desc">6 números del 1–56 · 3 sorteos por semana</div>
+    </div>
+    <div class="juego-arrow">›</div>
+  </a>
+
+  <a class="juego-card chispazo" href="chispazo-analizador.html">
+    <div class="juego-emoji">⚡</div>
+    <div class="juego-info">
+      <div class="juego-nombre">CHISPAZO</div>
+      <div class="juego-desc">5 números del 1–28 · 2 sorteos diarios</div>
+    </div>
+    <div class="juego-arrow">›</div>
+  </a>
+</div>
+
+<div class="footer">
+  Análisis estadístico · Historial 2018–2026<br>
+  Los resultados no garantizan premios — juega con responsabilidad
+</div>
+
+</body>
+</html>

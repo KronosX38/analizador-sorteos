@@ -98,11 +98,10 @@
   .resultados{display:none}
   .resultados.visible{display:block}
 </style>
-<!-- Firebase SDK -->
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-  import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-
+<!-- Firebase SDK compat -->
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script>
   const firebaseConfig = {
     apiKey: "AIzaSyC9A-o2msb1ma8HnuJ9pwGxIXnCacOOe44",
     authDomain: "sorteos-c868d.firebaseapp.com",
@@ -112,22 +111,30 @@
     appId: "1:885020028366:web:2436eb769bec9cfa04cf9f"
   };
 
-  const app = initializeApp(firebaseConfig);
-  const db  = getFirestore(app);
+  firebase.initializeApp(firebaseConfig);
+  const _db = firebase.firestore();
 
-  window._fbGuardar = async (coleccion, datos) => {
-    try { await setDoc(doc(db,'sorteos',coleccion), {datos}); }
-    catch(e){ console.warn('FB write:', e); }
-  };
-  window._fbCargar = async (coleccion) => {
+  window._fbGuardar = async function(coleccion, datos) {
     try {
-      const snap = await getDoc(doc(db,'sorteos',coleccion));
-      if(snap.exists()) return snap.data().datos || [];
-    } catch(e){ console.warn('FB read:', e); }
+      await _db.collection('sorteos').doc(coleccion).set({ datos: datos });
+      console.log('FB guardado:', coleccion);
+    } catch(e) { console.warn('FB write error:', e); }
+  };
+
+  window._fbCargar = async function(coleccion) {
+    try {
+      const snap = await _db.collection('sorteos').doc(coleccion).get();
+      if(snap.exists) {
+        console.log('FB cargado:', coleccion, snap.data().datos.length, 'registros');
+        return snap.data().datos || [];
+      }
+    } catch(e) { console.warn('FB read error:', e); }
     return null;
   };
+
   window._fbListo = true;
   document.dispatchEvent(new Event('firebase-listo'));
+  console.log('Firebase iniciado correctamente ✅');
 </script>
 </head>
 <body>

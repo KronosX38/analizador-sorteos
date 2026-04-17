@@ -408,7 +408,7 @@ function analizar() {
   });
 
   // Historial últimos 5
-  const ultimos5 = sorteos.slice(-5).reverse();
+  const ultimos5 = todosLosSorteos.slice(-5).reverse();
   const histDiv = document.getElementById('historial');
   histDiv.innerHTML = '';
   // Mapeo fecha→horario para mostrar en historial

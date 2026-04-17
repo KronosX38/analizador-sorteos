@@ -158,19 +158,12 @@
 <!-- ══════════ TAB: ANALIZAR ══════════ -->
 <div id="panelAnalizar">
   <div class="card">
-    <label>Selecciona el horario a analizar</label>
-    <div class="horario-grid">
-      <button class="horario-btn" data-h="1PM">1 PM</button>
-      <button class="horario-btn" data-h="3PM">3 PM</button>
-      <button class="horario-btn" data-h="5PM">5 PM</button>
-      <button class="horario-btn" data-h="7PM">7 PM</button>
-      <button class="horario-btn" data-h="9PM">9 PM</button>
-    </div>
-    <button class="btn-primary" id="btnAnalizar" disabled>VER NÚMEROS FRÍOS</button>
+    <label>Todos los sorteos del día combinados</label>
+    <button class="btn-primary" id="btnAnalizar">VER NÚMEROS FRÍOS</button>
   </div>
 
   <div class="resultados" id="resultados">
-    <div class="seccion-titulo">❄️ Sugerencia — 5 más fríos del mes</div>
+    <div class="seccion-titulo">❄️ 5 números más fríos — todos los sorteos</div>
     <div class="sugerencia-card">
       <div class="sug-header">
         <span class="sug-titulo" id="sugTitulo"></span>
@@ -336,31 +329,26 @@ function switchTab(tab) {
 // ═══════════════════════════════════════════════════════
 // TAB ANALIZAR — selector de horario
 // ═══════════════════════════════════════════════════════
-let horarioActivo = null;
-
-document.querySelectorAll('#panelAnalizar .horario-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    document.querySelectorAll('#panelAnalizar .horario-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    horarioActivo = btn.dataset.h;
-    document.getElementById('btnAnalizar').disabled = false;
-  });
-});
-
 document.getElementById('btnAnalizar').addEventListener('click', () => {
-  if (horarioActivo) analizar(horarioActivo);
+  analizar();
 });
 
 // ═══════════════════════════════════════════════════════
 // ANALIZAR
 // ═══════════════════════════════════════════════════════
-function analizar(horario) {
+function analizar() {
+  // Combinar todos los horarios en una sola lista ordenada por fecha
   const datos = getDatosCompletos();
-  const sorteos = datos[horario];
-  if (!sorteos || !sorteos.length) return;
+  const horarios = ['1PM','3PM','5PM','7PM','9PM'];
+  let todosLosSorteos = [];
+  horarios.forEach(h => {
+    (datos[h] || []).forEach(s => todosLosSorteos.push(s));
+  });
+  todosLosSorteos.sort((a,b) => a[0].localeCompare(b[0]));
+  if (!todosLosSorteos.length) return;
 
-  const VENTANA = 30;
-  const ventana = sorteos.slice(-VENTANA);
+  const VENTANA = 150; // ~30 días × 5 horarios
+  const ventana = todosLosSorteos.slice(-VENTANA);
   const total = ventana.length;
 
   const ultimaAparicion = {};
@@ -377,12 +365,10 @@ function analizar(horario) {
   const top5 = rankFrio.slice(0,5);
   const top5Set = new Set(top5);
 
-  // Cuántos son capturados vs base
   const capturados = cargarCapturados();
   const capSetFechas = new Set(capturados.map(c => c.horario+c.fecha));
 
-  const labels = {'1PM':'1:00 PM','3PM':'3:00 PM','5PM':'5:00 PM','7PM':'7:00 PM','9PM':'9:00 PM'};
-  document.getElementById('sugTitulo').textContent = `SORTEO ${labels[horario]}`;
+  document.getElementById('sugTitulo').textContent = 'TODOS LOS HORARIOS';
 
   // Badges
   const numDiv = document.getElementById('numSugeridos');
@@ -397,8 +383,8 @@ function analizar(horario) {
   const pv = ventana[0][0];
   const [pvy,pvm,pvd] = pv.split('-');
   document.getElementById('sugNota').textContent =
-    `Últimos ${total} sorteos · desde ${parseInt(pvd)}/${parseInt(pvm)}/${pvy}`;
-  document.getElementById('ventanaLabel').textContent = `${total} sorteos analizados`;
+    `${total} sorteos de todos los horarios · desde ${parseInt(pvd)}/${parseInt(pvm)}/${pvy}`;
+  document.getElementById('ventanaLabel').textContent = `${total} sorteos combinados`;
 
   // Ranking
   const maxDias = Math.max(...numeros.map(n => diasSin[n]));
@@ -425,11 +411,19 @@ function analizar(horario) {
   const ultimos5 = sorteos.slice(-5).reverse();
   const histDiv = document.getElementById('historial');
   histDiv.innerHTML = '';
+  // Mapeo fecha→horario para mostrar en historial
+  const fechaHorarioMap = {};
+  horarios.forEach(h => {
+    (datos[h]||[]).forEach(s => { fechaHorarioMap[s[0]+'_'+h] = h; });
+  });
+
   ultimos5.forEach(s => {
     const [fecha,...nums] = s;
     const [y,m,d] = fecha.split('-');
     const fStr = `${parseInt(d)}/${parseInt(m)}/${y.slice(2)}`;
-    const esNuevo = capSetFechas.has(horario+fecha);
+    // Detectar horario buscando cuál contiene este sorteo
+    const horarioS = horarios.find(h => (datos[h]||[]).some(x => x[0]===fecha && x.slice(1).join()===nums.join())) || '';
+    const esNuevo = capSetFechas.has(horarioS+fecha);
     let numHtml = '';
     nums.forEach(n => {
       numHtml += `<div class="hist-num${top5Set.has(n)?' es-frio':''}">${n}</div>`;
@@ -437,7 +431,7 @@ function analizar(horario) {
     histDiv.innerHTML += `
       <div class="historial-row">
         <span class="hist-fecha">${fStr}
-          <span class="hist-fuente ${esNuevo?'nuevo':'base'}">${esNuevo?'nuevo':'base'}</span>
+          <span class="hist-fuente base">${horarioS}</span>
         </span>
         <div class="hist-numeros">${numHtml}</div>
       </div>`;

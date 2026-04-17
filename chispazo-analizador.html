@@ -153,19 +153,15 @@
 <!-- ANALIZAR -->
 <div id="panelAnalizar">
   <div class="card">
-    <label>Selecciona el sorteo del día</label>
-    <div class="horario-grid">
-      <button class="horario-btn" data-h="S1">Sorteo 1<br><span style="font-size:.7rem;opacity:.6">Primero del día</span></button>
-      <button class="horario-btn" data-h="S2">Sorteo 2<br><span style="font-size:.7rem;opacity:.6">Segundo del día</span></button>
-    </div>
-    <button class="btn-primary" id="btnAnalizar" disabled>VER ANÁLISIS</button>
+    <label>Ambos sorteos del día combinados</label>
+    <button class="btn-primary" id="btnAnalizar">VER ANÁLISIS</button>
   </div>
   <div class="resultados" id="resultados">
     <div class="seccion-titulo">❄️ 5 números más fríos</div>
     <div class="sugerencia-card">
       <div class="sug-header">
         <span class="sug-titulo" id="sugTitulo"></span>
-        <span class="sug-ventana">Ventana: últimos 30 sorteos</span>
+        <span class="sug-ventana">Ventana: últimos 60 sorteos combinados</span>
       </div>
       <div class="numeros-sugeridos" id="numSugeridos"></div>
       <div class="sug-nota" id="sugNota"></div>
@@ -293,21 +289,17 @@ function switchTab(tab){
   if(tab==='historial')renderLista();
 }
 
-let horActivo=null;
-document.querySelectorAll('#panelAnalizar .horario-btn').forEach(btn=>{
-  btn.addEventListener('click',()=>{
-    document.querySelectorAll('#panelAnalizar .horario-btn').forEach(b=>b.classList.remove('active'));
-    btn.classList.add('active');
-    horActivo=btn.dataset.h;
-    document.getElementById('btnAnalizar').disabled=false;
-  });
-});
-document.getElementById('btnAnalizar').addEventListener('click',()=>{if(horActivo)analizar(horActivo);});
+document.getElementById('btnAnalizar').addEventListener('click',()=>{analizar();});
 
-function analizar(sorteo){
-  const sorteos=getDatos(sorteo);
-  const VENTANA=30;
-  const ventana=sorteos.slice(-VENTANA);
+function analizar(){
+  // Combinar S1 y S2 en una sola lista ordenada por fecha
+  const datosS1=getDatos('S1');
+  const datosS2=getDatos('S2');
+  const todosSorteos=[...datosS1,...datosS2].sort((a,b)=>a[0].localeCompare(b[0]));
+  if(!todosSorteos.length) return;
+
+  const VENTANA=60; // ~30 días × 2 sorteos
+  const ventana=todosSorteos.slice(-VENTANA);
   const total=ventana.length;
 
   const ulti={};
@@ -321,8 +313,7 @@ function analizar(sorteo){
   const top5=rank.slice(0,5);
   const top5Set=new Set(top5);
 
-  const labels={'S1':'SORTEO 1','S2':'SORTEO 2'};
-  document.getElementById('sugTitulo').textContent=labels[sorteo];
+  document.getElementById('sugTitulo').textContent='TODOS LOS SORTEOS';
 
   const nd=document.getElementById('numSugeridos');
   nd.innerHTML='';
@@ -334,15 +325,15 @@ function analizar(sorteo){
   });
 
   const pv=ventana[0][0];const[pvy,pvm,pvd]=pv.split('-');
-  document.getElementById('sugNota').textContent=`Últimos ${total} sorteos · desde ${parseInt(pvd)}/${parseInt(pvm)}/${pvy}`;
-  document.getElementById('ventanaLabel').textContent=`${total} sorteos`;
+  document.getElementById('sugNota').textContent=`${total} sorteos combinados · desde ${parseInt(pvd)}/${parseInt(pvm)}/${pvy}`;
+  document.getElementById('ventanaLabel').textContent=`${total} sorteos combinados`;
 
-  // Pares frecuentes (del histórico completo)
-  const pares=calcularPares(sorteos,3);
+  // Pares frecuentes (del histórico completo combinado)
+  const pares=calcularPares(todosSorteos,3);
   const lp=document.getElementById('listaPares');
   lp.innerHTML='';
   pares.forEach((p,i)=>{
-    const pct=(p.cnt/sorteos.length*100).toFixed(1);
+    const pct=(p.cnt/todosSorteos.length*100).toFixed(1);
     lp.innerHTML+=`<div class="par-row">
       <div class="par-nums">
         <div class="par-n">${p.par[0]}</div>
@@ -366,20 +357,19 @@ function analizar(sorteo){
     </div>`;
   });
 
-  // Historial
-  const cap=cargarCap();
-  const capSet=new Set(cap.filter(c=>c.sorteo===sorteo).map(c=>c.fecha));
-  const ult5=sorteos.slice(-5).reverse();
+  // Historial — últimos 5 de todos los sorteos combinados
+  const ult5=todosSorteos.slice(-5).reverse();
   const hd=document.getElementById('historial');
   hd.innerHTML='';
   ult5.forEach(s=>{
     const[fecha,...ns]=s;
     const[y,m,d]=fecha.split('-');
     const fStr=`${parseInt(d)}/${parseInt(m)}/${y.slice(2)}`;
-    const esNuevo=capSet.has(fecha);
+    // Detectar si es S1 o S2
+    const esS1=datosS1.some(x=>x[0]===fecha&&x.slice(1).join()===ns.join());
     let nh=ns.map(n=>`<div class="hist-n${top5Set.has(n)?' frio':''}">${n}</div>`).join('');
     hd.innerHTML+=`<div class="hist-row">
-      <span class="hist-fecha">${fStr}<span class="hist-fuente ${esNuevo?'nuevo':'base'}">${esNuevo?'nuevo':'base'}</span></span>
+      <span class="hist-fecha">${fStr}<span class="hist-fuente base">${esS1?'S1':'S2'}</span></span>
       <div class="hist-nums">${nh}</div>
     </div>`;
   });

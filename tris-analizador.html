@@ -53,6 +53,17 @@
   .numeros-sugeridos{display:flex;gap:10px;justify-content:center;margin-bottom:14px}
   .num-badge{width:54px;height:54px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:1.7rem;background:rgba(96,160,255,.12);border:2px solid var(--cold);color:var(--cold);position:relative}
   .num-badge .rank{position:absolute;top:-6px;right:-4px;background:var(--cold2);color:#fff;border-radius:50%;width:16px;height:16px;font-size:.55rem;display:flex;align-items:center;justify-content:center;font-family:'Inter',sans-serif;font-weight:700}
+  .pos-wrap{display:flex;flex-direction:column;align-items:center;gap:5px}
+  .pos-label{font-size:.6rem;letter-spacing:1px;color:var(--muted);text-transform:uppercase;font-weight:600}
+  .combinacion-sugerida{display:flex;gap:8px;justify-content:center;align-items:flex-end;margin-bottom:14px}
+  .hist-pos{display:flex;flex-direction:column;align-items:center;gap:2px}
+  .hist-pos-label{font-size:.5rem;color:var(--muted);letter-spacing:.5px}
+  .pos-wrap{display:flex;flex-direction:column;align-items:center;gap:5px}
+  .pos-label{font-size:.6rem;letter-spacing:1px;color:var(--muted);text-transform:uppercase;font-weight:600}
+  .combinacion-sugerida{display:flex;gap:8px;justify-content:center;align-items:flex-end;margin-bottom:14px}
+  .hist-pos{display:flex;flex-direction:column;align-items:center;gap:2px}
+  .hist-pos-label{font-size:.5rem;color:var(--muted);letter-spacing:.5px}
+  .hist-num-wrap{display:flex;gap:6px}
   .sug-nota{text-align:center;font-size:.7rem;color:var(--muted);line-height:1.4}
   .frio-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.04)}
   .frio-row:last-child{border-bottom:none}
@@ -163,11 +174,11 @@
   </div>
 
   <div class="resultados" id="resultados">
-    <div class="seccion-titulo">❄️ 5 números más fríos — todos los sorteos</div>
+    <div class="seccion-titulo">❄️ Combinación sugerida — número más frío por posición</div>
     <div class="sugerencia-card">
       <div class="sug-header">
         <span class="sug-titulo" id="sugTitulo"></span>
-        <span class="sug-ventana">Ventana: últimos 30 sorteos</span>
+        <span class="sug-ventana">Ventana: últimos 30 días · todos los horarios</span>
       </div>
       <div class="numeros-sugeridos" id="numSugeridos"></div>
       <div class="sug-nota" id="sugNota"></div>
@@ -337,7 +348,6 @@ document.getElementById('btnAnalizar').addEventListener('click', () => {
 // ANALIZAR
 // ═══════════════════════════════════════════════════════
 function analizar() {
-  // Combinar todos los horarios en una sola lista ordenada por fecha
   const datos = getDatosCompletos();
   const horarios = ['1PM','3PM','5PM','7PM','9PM'];
   let todosLosSorteos = [];
@@ -351,89 +361,104 @@ function analizar() {
   const ventana = todosLosSorteos.slice(-VENTANA);
   const total = ventana.length;
 
-  const ultimaAparicion = {};
-  for (let i=0; i<=9; i++) ultimaAparicion[i] = -1;
-  ventana.forEach((s, idx) => { for(let j=1;j<=5;j++) ultimaAparicion[s[j]] = idx; });
+  // ── Calcular frío por posición (1 a 5) ──────────────────────────────
+  const frioPorPos = []; // índice 0 = posición 1
+  for (let pos = 1; pos <= 5; pos++) {
+    const ulti = {};
+    for (let n=0; n<=9; n++) ulti[n] = -1;
+    ventana.forEach((s, idx) => { ulti[s[pos]] = idx; });
+    const dias = {};
+    for (let n=0; n<=9; n++)
+      dias[n] = ulti[n] === -1 ? total : (total - 1 - ulti[n]);
+    // El número más frío en esta posición
+    const masFrio = [0,1,2,3,4,5,6,7,8,9].reduce((a,b) =>
+      dias[b] > dias[a] ? b : a, 0);
+    frioPorPos.push({ num: masFrio, dias: dias[masFrio], diasTodos: dias });
+  }
 
-  const diasSin = {};
-  for (let i=0; i<=9; i++)
-    diasSin[i] = ultimaAparicion[i]===-1 ? total : (total-1-ultimaAparicion[i]);
+  const combSugerida = frioPorPos.map(p => p.num);
+  const combSet = new Set(combSugerida); // para resaltar en historial
 
-  const numeros = [0,1,2,3,4,5,6,7,8,9];
-  const rankFrio = [...numeros].sort((a,b) =>
-    diasSin[b]!==diasSin[a] ? diasSin[b]-diasSin[a] : a-b);
-  const top5 = rankFrio.slice(0,5);
-  const top5Set = new Set(top5);
+  document.getElementById('sugTitulo').textContent = 'COMBINACIÓN SUGERIDA';
 
-  const capturados = cargarCapturados();
-  const capSetFechas = new Set(capturados.map(c => c.horario+c.fecha));
-
-  document.getElementById('sugTitulo').textContent = 'TODOS LOS HORARIOS';
-
-  // Badges
+  // ── Badges con posición ───────────────────────────────────────────────
   const numDiv = document.getElementById('numSugeridos');
   numDiv.innerHTML = '';
-  top5.forEach((n,i) => {
-    const b = document.createElement('div');
-    b.className = 'num-badge';
-    b.innerHTML = `${n}<span class="rank">${i+1}</span>`;
-    numDiv.appendChild(b);
+  numDiv.className = 'combinacion-sugerida';
+  frioPorPos.forEach((p, i) => {
+    numDiv.innerHTML += `
+      <div class="pos-wrap">
+        <div class="num-badge">${p.num}</div>
+        <span class="pos-label">P${i+1}</span>
+      </div>`;
   });
 
   const pv = ventana[0][0];
   const [pvy,pvm,pvd] = pv.split('-');
   document.getElementById('sugNota').textContent =
-    `${total} sorteos de todos los horarios · desde ${parseInt(pvd)}/${parseInt(pvm)}/${pvy}`;
+    `Número más frío en cada posición · ${total} sorteos analizados`;
   document.getElementById('ventanaLabel').textContent = `${total} sorteos combinados`;
 
-  // Ranking
-  const maxDias = Math.max(...numeros.map(n => diasSin[n]));
+  // ── Ranking por posición ──────────────────────────────────────────────
   const listaFrios = document.getElementById('listaFrios');
   listaFrios.innerHTML = '';
-  rankFrio.forEach(n => {
-    const pct = maxDias>0 ? (diasSin[n]/maxDias*100) : 0;
-    const esSug = top5Set.has(n);
+  for (let pos = 1; pos <= 5; pos++) {
+    const { diasTodos } = frioPorPos[pos-1];
+    const maxD = Math.max(...Object.values(diasTodos));
+    const rankPos = [0,1,2,3,4,5,6,7,8,9].sort((a,b) =>
+      diasTodos[b] !== diasTodos[a] ? diasTodos[b]-diasTodos[a] : a-b);
     listaFrios.innerHTML += `
-      <div class="frio-row">
-        <span class="frio-num" style="${esSug?'color:var(--accent)':''}">${n}</span>
-        <div class="frio-bar-wrap">
-          <div class="frio-bar" style="width:${pct.toFixed(1)}%;${esSug?'background:var(--accent)':''}"></div>
-        </div>
-        <div class="frio-info">
-          <strong style="${esSug?'color:var(--accent)':''}">${diasSin[n]}</strong>
-          sorteo${diasSin[n]!==1?'s':''}
-          ${esSug?'<br><span style="color:var(--accent);font-size:.62rem">★ sugerido</span>':''}
-        </div>
+      <div style="font-size:.66rem;letter-spacing:1px;text-transform:uppercase;color:var(--cold);margin:12px 0 6px;font-weight:600">
+        Posición ${pos}
       </div>`;
-  });
+    rankPos.forEach(n => {
+      const pct = maxD > 0 ? (diasTodos[n]/maxD*100) : 0;
+      const esSug = frioPorPos[pos-1].num === n;
+      listaFrios.innerHTML += `
+        <div class="frio-row">
+          <span class="frio-num" style="${esSug?'color:var(--accent)':''}">${n}</span>
+          <div class="frio-bar-wrap">
+            <div class="frio-bar" style="width:${pct.toFixed(1)}%;${esSug?'background:var(--accent)':''}"></div>
+          </div>
+          <div class="frio-info">
+            <strong style="${esSug?'color:var(--accent)':''}">${diasTodos[n]}</strong>
+            sorteo${diasTodos[n]!==1?'s':''}
+            ${esSug?'<br><span style="color:var(--accent);font-size:.6rem">★ sugerido</span>':''}
+          </div>
+        </div>`;
+    });
+  }
 
-  // Historial últimos 5
+  // ── Historial últimos 5 con posiciones marcadas ───────────────────────
   const ultimos5 = todosLosSorteos.slice(-5).reverse();
   const histDiv = document.getElementById('historial');
   histDiv.innerHTML = '';
-  // Mapeo fecha→horario para mostrar en historial
-  const fechaHorarioMap = {};
-  horarios.forEach(h => {
-    (datos[h]||[]).forEach(s => { fechaHorarioMap[s[0]+'_'+h] = h; });
-  });
 
   ultimos5.forEach(s => {
-    const [fecha,...nums] = s;
+    const [fecha, ...nums] = s;
     const [y,m,d] = fecha.split('-');
     const fStr = `${parseInt(d)}/${parseInt(m)}/${y.slice(2)}`;
-    // Detectar horario buscando cuál contiene este sorteo
-    const horarioS = horarios.find(h => (datos[h]||[]).some(x => x[0]===fecha && x.slice(1).join()===nums.join())) || '';
-    const esNuevo = capSetFechas.has(horarioS+fecha);
+    const horarioS = horarios.find(h =>
+      (datos[h]||[]).some(x => x[0]===fecha && x.slice(1).join()===nums.join())) || '';
+
     let numHtml = '';
-    nums.forEach(n => {
-      numHtml += `<div class="hist-num${top5Set.has(n)?' es-frio':''}">${n}</div>`;
+    nums.forEach((n, i) => {
+      const esSug = frioPorPos[i] && frioPorPos[i].num === n;
+      numHtml += `
+        <div class="hist-pos">
+          <div class="hist-num${esSug?' es-frio':''}" style="width:28px;height:28px;border-radius:50%;background:var(--surface);border:1px solid ${esSug?'var(--cold2)':'var(--border)'};display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:600;${esSug?'color:var(--cold);':''}">
+            ${n}
+          </div>
+          <span class="hist-pos-label">P${i+1}</span>
+        </div>`;
     });
+
     histDiv.innerHTML += `
       <div class="historial-row">
         <span class="hist-fecha">${fStr}
           <span class="hist-fuente base">${horarioS}</span>
         </span>
-        <div class="hist-numeros">${numHtml}</div>
+        <div class="hist-numeros" style="gap:4px">${numHtml}</div>
       </div>`;
   });
 

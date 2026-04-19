@@ -350,6 +350,9 @@ document.getElementById('btnAnalizar').addEventListener('click', () => {
 function analizar() {
   const datos = getDatosCompletos();
   const horarios = ['1PM','3PM','5PM','7PM','9PM'];
+
+  // Construir lista por posición — juntando todos los horarios ordenados por fecha
+  // Posición 1 = s[1], posición 2 = s[2], etc.
   let todosLosSorteos = [];
   horarios.forEach(h => {
     (datos[h] || []).forEach(s => todosLosSorteos.push(s));
@@ -357,27 +360,29 @@ function analizar() {
   todosLosSorteos.sort((a,b) => a[0].localeCompare(b[0]));
   if (!todosLosSorteos.length) return;
 
-  const VENTANA = 150; // ~30 días × 5 horarios
-  const ventana = todosLosSorteos.slice(-VENTANA);
-  const total = ventana.length;
+  const VENTANA_POS = 30; // últimos 30 sorteos por posición (independiente para cada una)
 
-  // ── Calcular frío por posición (1 a 5) ──────────────────────────────
-  const frioPorPos = []; // índice 0 = posición 1
+  // ── Calcular frío por posición de forma independiente ─────────────────
+  const frioPorPos = [];
   for (let pos = 1; pos <= 5; pos++) {
+    // Tomar los últimos VENTANA_POS sorteos que tienen valor en esta posición
+    const ventanaPos = todosLosSorteos.slice(-VENTANA_POS);
+    const total = ventanaPos.length;
+
     const ulti = {};
     for (let n=0; n<=9; n++) ulti[n] = -1;
-    ventana.forEach((s, idx) => { ulti[s[pos]] = idx; });
+    ventanaPos.forEach((s, idx) => { ulti[s[pos]] = idx; });
+
     const dias = {};
     for (let n=0; n<=9; n++)
       dias[n] = ulti[n] === -1 ? total : (total - 1 - ulti[n]);
-    // El número más frío en esta posición
+
+    // Número más frío en esta posición
     const masFrio = [0,1,2,3,4,5,6,7,8,9].reduce((a,b) =>
       dias[b] > dias[a] ? b : a, 0);
+
     frioPorPos.push({ num: masFrio, dias: dias[masFrio], diasTodos: dias });
   }
-
-  const combSugerida = frioPorPos.map(p => p.num);
-  const combSet = new Set(combSugerida); // para resaltar en historial
 
   document.getElementById('sugTitulo').textContent = 'COMBINACIÓN SUGERIDA';
 
@@ -393,27 +398,27 @@ function analizar() {
       </div>`;
   });
 
-  const pv = ventana[0][0];
-  const [pvy,pvm,pvd] = pv.split('-');
   document.getElementById('sugNota').textContent =
-    `Número más frío en cada posición · ${total} sorteos analizados`;
-  document.getElementById('ventanaLabel').textContent = `${total} sorteos combinados`;
+    `Número más frío en cada posición · últimos ${VENTANA_POS} sorteos por posición`;
+  document.getElementById('ventanaLabel').textContent = `${VENTANA_POS} sorteos por posición`;
 
   // ── Ranking por posición ──────────────────────────────────────────────
   const listaFrios = document.getElementById('listaFrios');
   listaFrios.innerHTML = '';
   for (let pos = 1; pos <= 5; pos++) {
-    const { diasTodos } = frioPorPos[pos-1];
+    const { diasTodos, num: sugeridoPos } = frioPorPos[pos-1];
     const maxD = Math.max(...Object.values(diasTodos));
     const rankPos = [0,1,2,3,4,5,6,7,8,9].sort((a,b) =>
       diasTodos[b] !== diasTodos[a] ? diasTodos[b]-diasTodos[a] : a-b);
+
     listaFrios.innerHTML += `
-      <div style="font-size:.66rem;letter-spacing:1px;text-transform:uppercase;color:var(--cold);margin:12px 0 6px;font-weight:600">
-        Posición ${pos}
-      </div>`;
+      <div style="font-size:.66rem;letter-spacing:1px;text-transform:uppercase;
+        color:var(--cold);margin:14px 0 6px;font-weight:600;border-top:1px solid var(--border);
+        padding-top:10px">Posición ${pos}</div>`;
+
     rankPos.forEach(n => {
       const pct = maxD > 0 ? (diasTodos[n]/maxD*100) : 0;
-      const esSug = frioPorPos[pos-1].num === n;
+      const esSug = sugeridoPos === n;
       listaFrios.innerHTML += `
         <div class="frio-row">
           <span class="frio-num" style="${esSug?'color:var(--accent)':''}">${n}</span>
@@ -446,9 +451,10 @@ function analizar() {
       const esSug = frioPorPos[i] && frioPorPos[i].num === n;
       numHtml += `
         <div class="hist-pos">
-          <div class="hist-num${esSug?' es-frio':''}" style="width:28px;height:28px;border-radius:50%;background:var(--surface);border:1px solid ${esSug?'var(--cold2)':'var(--border)'};display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:600;${esSug?'color:var(--cold);':''}">
-            ${n}
-          </div>
+          <div style="width:28px;height:28px;border-radius:50%;background:var(--surface);
+            border:1px solid ${esSug?'var(--cold2)':'var(--border)'};display:flex;
+            align-items:center;justify-content:center;font-size:.8rem;font-weight:600;
+            ${esSug?'color:var(--cold);':''}">${n}</div>
           <span class="hist-pos-label">P${i+1}</span>
         </div>`;
     });

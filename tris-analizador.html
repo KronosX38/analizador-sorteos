@@ -375,7 +375,7 @@ function renderRankingTend(frec, tendSet){
     html+='<div class="frio-row">'
       +'<span class="frio-num" style="'+(es?'color:var(--hot)':'')+'">'+n+'</span>'
       +'<div class="frio-bar-wrap"><div class="frio-bar" style="width:'+pct.toFixed(1)+'%;background:'+(es?'var(--hot)':'var(--border)')+'"></div></div>'
-      +'<div class="frio-info"><strong style="'+(es?'color:var(--hot)':'')+'">'+frec[n]+'</strong> vez'+(frec[n]!==1?'es':'')
+      +'<div class="frio-info"><strong style="'+(es?'color:var(--hot)':'')+'">'+frec[n]+'</strong> '+(frec[n]===1?'vez':'veces')
       +(es?'<br><span style="color:var(--hot);font-size:.6rem">★ tendencia</span>':'')+'</div>'
       +'</div>';
   });
@@ -392,7 +392,7 @@ function renderRankingFrio(frec, frioSet){
     html+='<div class="frio-row">'
       +'<span class="frio-num" style="'+(es?'color:var(--cold)':'')+'">'+n+'</span>'
       +'<div class="frio-bar-wrap"><div class="frio-bar" style="width:'+pct.toFixed(1)+'%;background:'+(es?'var(--cold2)':'var(--border)')+'"></div></div>'
-      +'<div class="frio-info"><strong style="'+(es?'color:var(--cold)':'')+'">'+frec[n]+'</strong> vez'+(frec[n]!==1?'es':'')
+      +'<div class="frio-info"><strong style="'+(es?'color:var(--cold)':'')+'">'+frec[n]+'</strong> '+(frec[n]===1?'vez':'veces')
       +(es?'<br><span style="color:var(--cold);font-size:.6rem">★ frío</span>':'')+'</div>'
       +'</div>';
   });

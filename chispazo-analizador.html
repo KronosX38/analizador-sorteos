@@ -99,42 +99,47 @@
   .resultados.visible{display:block}
 </style>
 <!-- Firebase SDK compat -->
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
 <script>
-  const firebaseConfig = {
-    apiKey: "AIzaSyC9A-o2msb1ma8HnuJ9pwGxIXnCacOOe44",
-    authDomain: "sorteos-c868d.firebaseapp.com",
-    projectId: "sorteos-c868d",
-    storageBucket: "sorteos-c868d.firebasestorage.app",
-    messagingSenderId: "885020028366",
-    appId: "1:885020028366:web:2436eb769bec9cfa04cf9f"
-  };
-
-  firebase.initializeApp(firebaseConfig);
-  const _db = firebase.firestore();
-
-  window._fbGuardar = async function(coleccion, datos) {
+(function() {
+  var pending = 2;
+  function onLoad() {
+    pending--;
+    if (pending > 0) return;
     try {
-      await _db.collection('sorteos').doc(coleccion).set({ datos: datos });
-      console.log('FB guardado:', coleccion);
-    } catch(e) { console.warn('FB write error:', e); }
-  };
-
-  window._fbCargar = async function(coleccion) {
-    try {
-      const snap = await _db.collection('sorteos').doc(coleccion).get();
-      if(snap.exists) {
-        console.log('FB cargado:', coleccion, snap.data().datos.length, 'registros');
-        return snap.data().datos || [];
-      }
-    } catch(e) { console.warn('FB read error:', e); }
-    return null;
-  };
-
-  window._fbListo = true;
-  document.dispatchEvent(new Event('firebase-listo'));
-  console.log('Firebase iniciado correctamente ✅');
+      firebase.initializeApp({
+        apiKey: "AIzaSyC9A-o2msb1ma8HnuJ9pwGxIXnCacOOe44",
+        authDomain: "sorteos-c868d.firebaseapp.com",
+        projectId: "sorteos-c868d",
+        storageBucket: "sorteos-c868d.firebasestorage.app",
+        messagingSenderId: "885020028366",
+        appId: "1:885020028366:web:2436eb769bec9cfa04cf9f"
+      });
+      var _db = firebase.firestore();
+      window._fbGuardar = async function(col, datos) {
+        try { await _db.collection('sorteos').doc(col).set({datos:datos}); console.log('FB guardado:',col); }
+        catch(e) { console.warn('FB write error:',e); }
+      };
+      window._fbCargar = async function(col) {
+        try {
+          var snap = await _db.collection('sorteos').doc(col).get();
+          if(snap.exists){ console.log('FB cargado:',col,snap.data().datos.length,'registros'); return snap.data().datos||[]; }
+        } catch(e) { console.warn('FB read error:',e); }
+        return null;
+      };
+      window._fbListo = true;
+      document.dispatchEvent(new Event('firebase-listo'));
+      console.log('Firebase listo ✅');
+    } catch(e) { console.warn('Firebase init error:',e); }
+  }
+  var s1 = document.createElement('script');
+  s1.src = 'https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js';
+  s1.onload = onLoad;
+  document.head.appendChild(s1);
+  var s2 = document.createElement('script');
+  s2.src = 'https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js';
+  s2.onload = onLoad;
+  document.head.appendChild(s2);
+})();
 </script>
 </head>
 <body>

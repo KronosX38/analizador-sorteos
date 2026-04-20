@@ -10,7 +10,7 @@
   --bg:#0a0a0f;--surface:#12121a;--card:#1a1a26;--border:#2a2a3a;
   --accent:#f0c040;--accent2:#e05050;--text:#e8e8f0;--muted:#7070a0;
   --cold:#60a0ff;--cold2:#3070cc;--green:#40c070;--green2:#1a6035;
-  --hot:#ff8040;--hot2:#aa4010;
+  --hot:#ff7040;--hot2:#aa3010;
 }
 *{box-sizing:border-box;margin:0;padding:0}
 body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-height:100vh;padding:20px 16px 60px}
@@ -26,61 +26,39 @@ header p{color:var(--muted);font-size:.75rem;margin-top:6px;letter-spacing:1.5px
 .seccion-titulo{font-size:.68rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin:20px 0 10px}
 .btn-primary{width:100%;margin-top:14px;background:var(--accent);color:#000;border:none;border-radius:12px;padding:13px;font-family:'Bebas Neue',sans-serif;font-size:1.3rem;letter-spacing:3px;cursor:pointer;transition:opacity .18s}
 .btn-primary:hover{opacity:.85}
+.btn-primary:disabled{opacity:.35;cursor:not-allowed}
 .btn-green{background:var(--green);color:#000}
 
-/* SUGERENCIA */
-.sug-card{border-radius:18px;padding:20px 18px 16px;margin-bottom:12px}
-.sug-card.mixta{background:linear-gradient(140deg,#12100a 0%,#0a0d15 100%);border:1px solid #504020}
-.sug-header{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:16px}
-.sug-titulo{font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:2px;color:var(--accent)}
-.sug-ventana{font-size:.64rem;color:var(--muted)}
-.combinacion{display:flex;gap:8px;justify-content:center;margin-bottom:16px;flex-wrap:wrap}
-.num-wrap{display:flex;flex-direction:column;align-items:center;gap:4px}
-.num-badge{width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:1.7rem;position:relative}
-.num-badge.frio{background:rgba(96,160,255,.12);border:2px solid var(--cold);color:var(--cold)}
-.num-badge.tendencia{background:rgba(255,128,64,.12);border:2px solid var(--hot);color:var(--hot)}
-.num-badge.ambos{background:rgba(240,192,64,.1);border:2px solid var(--accent);color:var(--accent)}
-.num-tipo{font-size:.55rem;letter-spacing:.5px;font-weight:700;text-transform:uppercase}
-.tipo-frio{color:var(--cold)}
-.tipo-tend{color:var(--hot)}
-.tipo-ambos{color:var(--accent)}
-.sug-nota{text-align:center;font-size:.7rem;color:var(--muted);line-height:1.6}
-.leyenda{display:flex;gap:12px;justify-content:center;margin-top:10px;flex-wrap:wrap}
-.leyenda-item{display:flex;align-items:center;gap:5px;font-size:.66rem;color:var(--muted)}
-.dot{width:10px;height:10px;border-radius:50%}
-.dot.frio{background:var(--cold)}
-.dot.tend{background:var(--hot)}
-.dot.ambos{background:var(--accent)}
-
-/* RANKING */
-.frio-row{display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.04)}
-.frio-row:last-child{border-bottom:none}
-.frio-num{font-family:'Bebas Neue',sans-serif;font-size:1.5rem;width:26px;text-align:center;color:var(--muted)}
-.frio-bar-wrap{flex:1;background:rgba(255,255,255,.05);border-radius:4px;height:5px;overflow:hidden}
-.frio-bar{height:100%;border-radius:4px}
-.frio-info{font-size:.7rem;color:var(--muted);text-align:right;min-width:80px}
-.frio-info strong{font-size:.82rem}
-.ranking-tabs{display:flex;gap:8px;margin-bottom:12px}
-.rtab{flex:1;padding:7px;text-align:center;border-radius:8px;cursor:pointer;font-size:.72rem;font-weight:600;border:1px solid var(--border);background:var(--surface);color:var(--muted);font-family:'Inter',sans-serif;transition:all .18s}
-.rtab.active.frio{border-color:var(--cold);color:var(--cold);background:rgba(96,160,255,.08)}
-.rtab.active.tend{border-color:var(--hot);color:var(--hot);background:rgba(255,128,64,.08)}
-
-/* HISTORIAL */
-.hist-row{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.04)}
-.hist-row:last-child{border-bottom:none}
-.hist-fecha{color:var(--muted);font-size:.68rem;min-width:65px}
-.hist-hor{font-size:.58rem;padding:1px 5px;border-radius:4px;background:rgba(96,160,255,.06);color:var(--muted);border:1px solid var(--border);margin-left:3px}
-.hist-nums{display:flex;gap:4px}
-.hist-n{width:27px;height:27px;border-radius:50%;background:var(--surface);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:.78rem;font-weight:600}
-.hist-n.frio{border-color:var(--cold2);color:var(--cold);background:rgba(96,160,255,.1)}
-.hist-n.tend{border-color:var(--hot2);color:var(--hot);background:rgba(255,128,64,.1)}
-.hist-n.ambos{border-color:var(--accent);color:var(--accent);background:rgba(240,192,64,.08)}
-
-/* CAPTURA */
+/* HORARIO */
 .horario-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
 .horario-btn{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px 4px;text-align:center;cursor:pointer;color:var(--text);font-family:'Inter',sans-serif;font-size:.82rem;font-weight:500;transition:all .18s}
 .horario-btn:hover{border-color:var(--accent);color:var(--accent)}
 .horario-btn.active{background:var(--accent);border-color:var(--accent);color:#000;font-weight:700}
+
+/* PREDICCIONES */
+.pred-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:4px}
+.pred-card{border-radius:16px;padding:16px;text-align:center}
+.pred-card.caliente{background:linear-gradient(140deg,#1a0800 0%,#100500 100%);border:1px solid var(--hot2)}
+.pred-card.fria{background:linear-gradient(140deg,#00080f 0%,#000510 100%);border:1px solid var(--cold2)}
+.pred-titulo{font-family:'Bebas Neue',sans-serif;font-size:.9rem;letter-spacing:2px;margin-bottom:10px}
+.pred-card.caliente .pred-titulo{color:var(--hot)}
+.pred-card.fria .pred-titulo{color:var(--cold)}
+.pred-numero{font-family:'Bebas Neue',sans-serif;font-size:2.2rem;letter-spacing:6px;line-height:1;margin-bottom:8px}
+.pred-card.caliente .pred-numero{color:var(--hot)}
+.pred-card.fria .pred-numero{color:var(--cold)}
+.pred-desc{font-size:.64rem;color:var(--muted);line-height:1.4}
+
+/* HISTORIAL */
+.hist-row{display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:1px solid rgba(255,255,255,.04)}
+.hist-row:last-child{border-bottom:none}
+.hist-fecha{color:var(--muted);font-size:.7rem;min-width:65px}
+.hist-combo{font-family:'Bebas Neue',sans-serif;font-size:1.3rem;letter-spacing:4px;color:var(--text)}
+.hist-combo.nuevo{color:var(--green)}
+.hist-badge{font-size:.58rem;padding:1px 6px;border-radius:4px;margin-left:4px;vertical-align:middle}
+.hist-badge.nuevo{background:rgba(64,192,112,.15);color:var(--green);border:1px solid var(--green2)}
+.hist-badge.base{background:rgba(96,160,255,.06);color:var(--muted);border:1px solid var(--border)}
+
+/* CAPTURA */
 .input-row{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:10px}
 .num-input{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px 4px;text-align:center;color:var(--text);font-family:'Bebas Neue',sans-serif;font-size:1.4rem;width:100%;-moz-appearance:textfield}
 .num-input::-webkit-outer-spin-button,.num-input::-webkit-inner-spin-button{-webkit-appearance:none}
@@ -96,8 +74,7 @@ header p{color:var(--muted);font-size:.75rem;margin-top:6px;letter-spacing:1.5px
 .cap-row:last-child{border-bottom:none}
 .cap-hor{background:rgba(240,192,64,.1);border:1px solid rgba(240,192,64,.25);border-radius:6px;padding:2px 6px;font-size:.65rem;color:var(--accent);font-weight:600;min-width:36px;text-align:center}
 .cap-fecha{color:var(--muted);font-size:.7rem;min-width:58px}
-.cap-nums{display:flex;gap:3px;flex:1}
-.cap-n{width:24px;height:24px;border-radius:50%;background:var(--surface);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:600}
+.cap-combo{font-family:'Bebas Neue',sans-serif;font-size:1.2rem;letter-spacing:3px;flex:1;color:var(--text)}
 .btn-del{background:rgba(224,80,80,.12);border:1px solid rgba(224,80,80,.3);border-radius:8px;color:var(--accent2);font-size:.68rem;padding:4px 8px;cursor:pointer;font-family:'Inter',sans-serif}
 .empty-msg{color:var(--muted);font-size:.8rem;text-align:center;padding:20px 0}
 .sync-status{font-size:.7rem;color:var(--green);text-align:center;min-height:1.2em;margin-bottom:8px}
@@ -105,6 +82,7 @@ header p{color:var(--muted);font-size:.75rem;margin-top:6px;letter-spacing:1.5px
 .update-note{text-align:center;margin-top:16px;font-size:.66rem;color:var(--muted)}
 .resultados{display:none}
 .resultados.visible{display:block}
+.sug-nota{text-align:center;font-size:.7rem;color:var(--muted);margin-top:10px;line-height:1.5}
 </style>
 
 <script>
@@ -147,7 +125,7 @@ header p{color:var(--muted);font-size:.75rem;margin-top:6px;letter-spacing:1.5px
 
 <header>
   <h1>🎯 TRIS</h1>
-  <p>Tendencia + Fríos</p>
+  <p>Predicción por Horario</p>
   <div class="fecha-hoy" id="fechaHoy"></div>
 </header>
 
@@ -160,40 +138,37 @@ header p{color:var(--muted);font-size:.75rem;margin-top:6px;letter-spacing:1.5px
 <!-- ANALIZAR -->
 <div id="panelAnalizar">
   <div class="card">
-    <label>Todos los horarios · últimos 15 sorteos</label>
-    <button class="btn-primary" onclick="analizar()">VER ANÁLISIS</button>
+    <label>Selecciona el horario a analizar</label>
+    <div class="horario-grid" id="anaHorarioGrid">
+      <button class="horario-btn" data-h="1PM">1 PM</button>
+      <button class="horario-btn" data-h="3PM">3 PM</button>
+      <button class="horario-btn" data-h="5PM">5 PM</button>
+      <button class="horario-btn" data-h="7PM">7 PM</button>
+      <button class="horario-btn" data-h="9PM">9 PM</button>
+    </div>
+    <button class="btn-primary" id="btnAnalizar" disabled>VER PREDICCIÓN</button>
   </div>
+
   <div class="resultados" id="resultados">
-
-    <div class="seccion-titulo">🎯 Combinación sugerida</div>
-    <div class="sug-card mixta">
-      <div class="sug-header">
-        <span class="sug-titulo">3 TENDENCIA + 2 FRÍOS</span>
-        <span class="sug-ventana">Últimos 15 sorteos combinados</span>
+    <div class="seccion-titulo">🎯 Predicción — <span id="labelHorario"></span></div>
+    <div class="pred-grid">
+      <div class="pred-card caliente">
+        <div class="pred-titulo">🔥 MÁS CALIENTE</div>
+        <div class="pred-numero" id="numCaliente"></div>
+        <div class="pred-desc" id="descCaliente"></div>
       </div>
-      <div class="combinacion" id="combinacion"></div>
-      <div class="leyenda">
-        <div class="leyenda-item"><div class="dot tend"></div>Tendencia (más frecuente)</div>
-        <div class="leyenda-item"><div class="dot frio"></div>Frío (menos frecuente)</div>
-        <div class="leyenda-item"><div class="dot ambos"></div>Ambos</div>
+      <div class="pred-card fria">
+        <div class="pred-titulo">❄️ MÁS FRÍA</div>
+        <div class="pred-numero" id="numFria"></div>
+        <div class="pred-desc" id="descFria"></div>
       </div>
-      <div class="sug-nota" style="margin-top:10px" id="sugNota"></div>
     </div>
+    <div class="sug-nota" id="sugNota"></div>
 
-    <div class="seccion-titulo">📊 Ranking · <span id="ventanaLabel"></span></div>
-    <div class="card" style="padding:14px">
-      <div class="ranking-tabs">
-        <button class="rtab active tend" onclick="mostrarRanking('tend')" id="rtabTend">🔥 Tendencia</button>
-        <button class="rtab frio" onclick="mostrarRanking('frio')" id="rtabFrio">❄️ Fríos</button>
-      </div>
-      <div id="rankingTend"></div>
-      <div id="rankingFrio" style="display:none"></div>
-    </div>
-
-    <div class="seccion-titulo">📅 Últimos 5 sorteos</div>
+    <div class="seccion-titulo">📅 Últimos 8 sorteos del horario</div>
     <div class="card" style="padding:14px"><div id="historial"></div></div>
 
-    <div class="disclaimer">⚠️ Análisis estadístico. El azar no tiene memoria. Juega con responsabilidad.</div>
+    <div class="disclaimer">⚠️ Análisis estadístico basado en historial. El azar no tiene memoria — cada sorteo es independiente. Juega con responsabilidad.</div>
     <div class="update-note" id="updateNote"></div>
   </div>
 </div>
@@ -260,12 +235,13 @@ document.addEventListener('firebase-listo', async function(){
   } else { if(ind) ind.textContent=''; }
 });
 
-function getDatos(){
-  var result={};
-  ['1PM','3PM','5PM','7PM','9PM'].forEach(function(h){ result[h]=(DATOS_BASE[h]||[]).slice(); });
-  cargar().forEach(function(c){ if(result[c.horario]) result[c.horario].push([c.fecha,c.n1,c.n2,c.n3,c.n4,c.n5]); });
-  Object.keys(result).forEach(function(h){ result[h].sort(function(a,b){ return a[0].localeCompare(b[0]); }); });
-  return result;
+function getDatosHorario(horario){
+  var base=(DATOS_BASE[horario]||[]).slice();
+  cargar().filter(function(c){return c.horario===horario;}).forEach(function(c){
+    base.push([c.fecha,c.n1,c.n2,c.n3,c.n4,c.n5]);
+  });
+  base.sort(function(a,b){return a[0].localeCompare(b[0]);});
+  return base;
 }
 
 var hoy=new Date();
@@ -284,126 +260,79 @@ function switchTab(tab){
   if(tab==='historial') renderCap();
 }
 
-// Guardar resultados para el ranking
-var _frecs=null, _top3tend=null, _top2frio=null;
-
-function analizar(){
-  var hs=['1PM','3PM','5PM','7PM','9PM'];
-  var datos=getDatos();
-  var todos=[];
-  hs.forEach(function(h){ (datos[h]||[]).forEach(function(s){ todos.push(s); }); });
-  todos.sort(function(a,b){ return a[0].localeCompare(b[0]); });
-  if(!todos.length) return;
-
-  var VENTANA=15;
-  var ventana=todos.slice(-VENTANA);
-  var total=ventana.length;
-
-  // Contar frecuencia de cada número
-  var frec={};
-  for(var n=0;n<=9;n++) frec[n]=0;
-  ventana.forEach(function(s){ for(var j=1;j<=5;j++) frec[s[j]]++; });
-  _frecs=frec;
-
-  // Ordenar por frecuencia descendente → tendencia
-  var orden=[0,1,2,3,4,5,6,7,8,9].sort(function(a,b){ return frec[b]!==frec[a]?frec[b]-frec[a]:a-b; });
-  var top3tend=orden.slice(0,3);
-  // Ordenar por frecuencia ascendente → fríos
-  var ordenFrio=[0,1,2,3,4,5,6,7,8,9].sort(function(a,b){ return frec[a]!==frec[b]?frec[a]-frec[b]:a-b; });
-  var top2frio=ordenFrio.slice(0,2);
-
-  _top3tend=top3tend; _top2frio=top2frio;
-
-  var tendSet=new Set(top3tend);
-  var frioSet=new Set(top2frio);
-
-  // Combinación: unión de los 5 (con posible traslape)
-  var combo=[];
-  top3tend.forEach(function(n){ combo.push({n:n,tipo:frioSet.has(n)?'ambos':'tend'}); });
-  top2frio.forEach(function(n){ if(!tendSet.has(n)) combo.push({n:n,tipo:'frio'}); });
-
-  // Badges
-  var cDiv=document.getElementById('combinacion');
-  cDiv.innerHTML='';
-  combo.forEach(function(item){
-    var label=item.tipo==='tend'?'Tendencia':item.tipo==='frio'?'Frío':'Ambos';
-    cDiv.innerHTML+='<div class="num-wrap">'
-      +'<div class="num-badge '+item.tipo+'">'+item.n+'</div>'
-      +'<span class="num-tipo tipo-'+item.tipo+'">'+label+'</span>'
-      +'</div>';
+// Selector horario analizar
+var horarioActivo=null;
+document.querySelectorAll('#anaHorarioGrid .horario-btn').forEach(function(btn){
+  btn.addEventListener('click',function(){
+    document.querySelectorAll('#anaHorarioGrid .horario-btn').forEach(function(b){b.classList.remove('active');});
+    btn.classList.add('active');
+    horarioActivo=btn.dataset.h;
+    document.getElementById('btnAnalizar').disabled=false;
   });
+});
+document.getElementById('btnAnalizar').addEventListener('click',function(){
+  if(horarioActivo) analizar(horarioActivo);
+});
 
-  var pv=ventana[0][0].split('-');
-  document.getElementById('sugNota').textContent=
-    total+' sorteos analizados · desde '+parseInt(pv[2])+'/'+parseInt(pv[1])+'/'+pv[0];
-  document.getElementById('ventanaLabel').textContent=total+' sorteos';
+function analizar(horario){
+  var sorteos=getDatosHorario(horario);
+  if(!sorteos.length) return;
 
-  // Render rankings
-  renderRankingTend(frec, tendSet);
-  renderRankingFrio(frec, frioSet);
+  var VENTANA=30;
+  var ult=sorteos.slice(-VENTANA);
 
-  // Historial últimos 5
-  var ult5=todos.slice(-5).reverse();
+  // ── CALIENTE: dígito más frecuente por posición en los últimos 30 ──────
+  var caliente=[];
+  for(var pos=1;pos<=5;pos++){
+    var cnt={};
+    for(var n=0;n<=9;n++) cnt[n]=0;
+    ult.forEach(function(s){cnt[s[pos]]++;});
+    var mejor=0;
+    for(var n=1;n<=9;n++){if(cnt[n]>cnt[mejor]) mejor=n;}
+    caliente.push(mejor);
+  }
+
+  // ── FRÍA: combinación exacta que lleva más sorteos sin aparecer ─────────
+  var ultimaAp={};
+  sorteos.forEach(function(s,i){
+    var k=s[1]+''+s[2]+''+s[3]+''+s[4]+''+s[5];
+    ultimaAp[k]=i;
+  });
+  var masViejaKey=null, masViejaIdx=Infinity;
+  Object.keys(ultimaAp).forEach(function(k){
+    if(ultimaAp[k]<masViejaIdx){masViejaIdx=ultimaAp[k];masViejaKey=k;}
+  });
+  var diasFria=sorteos.length-1-masViejaIdx;
+
+  // Render
+  var labels={'1PM':'1:00 PM','3PM':'3:00 PM','5PM':'5:00 PM','7PM':'7:00 PM','9PM':'9:00 PM'};
+  document.getElementById('labelHorario').textContent=labels[horario];
+  document.getElementById('numCaliente').textContent=caliente.join(' ');
+  document.getElementById('descCaliente').textContent='Dígito más frecuente en cada posición · últimos '+ult.length+' sorteos';
+  document.getElementById('numFria').textContent=masViejaKey.split('').join(' ');
+  document.getElementById('descFria').textContent='Combinación exacta que lleva más tiempo sin salir · '+diasFria+' sorteos atrás';
+  document.getElementById('sugNota').textContent='Basado en '+sorteos.length.toLocaleString()+' sorteos históricos del horario '+labels[horario];
+
+  // Historial últimos 8
+  var ult8=sorteos.slice(-8).reverse();
+  var cap=cargar();
+  var capFechas=new Set(cap.filter(function(c){return c.horario===horario;}).map(function(c){return c.fecha;}));
   var hDiv=document.getElementById('historial');
   hDiv.innerHTML='';
-  ult5.forEach(function(s){
-    var fecha=s[0]; var nums=s.slice(1);
+  ult8.forEach(function(s){
+    var fecha=s[0];
+    var combo=s[1]+''+s[2]+''+s[3]+''+s[4]+''+s[5];
     var fp=fecha.split('-');
     var fStr=parseInt(fp[2])+'/'+parseInt(fp[1])+'/'+fp[0].slice(2);
-    var hor=hs.find(function(h){ return (datos[h]||[]).some(function(x){ return x[0]===fecha&&x.slice(1).join()===nums.join(); }); })||'';
-    var nh=nums.map(function(n){
-      var cls=tendSet.has(n)&&frioSet.has(n)?'ambos':tendSet.has(n)?'tend':frioSet.has(n)?'frio':'';
-      return '<div class="hist-n'+( cls?' '+cls:'')+'" >'+n+'</div>';
-    }).join('');
+    var esNuevo=capFechas.has(fecha);
     hDiv.innerHTML+='<div class="hist-row">'
-      +'<span class="hist-fecha">'+fStr+'<span class="hist-hor">'+hor+'</span></span>'
-      +'<div class="hist-nums">'+nh+'</div>'
+      +'<span class="hist-fecha">'+fStr+'<span class="hist-badge '+(esNuevo?'nuevo':'base')+'">'+(esNuevo?'nuevo':'base')+'</span></span>'
+      +'<span class="hist-combo'+(esNuevo?' nuevo':'')+'">'+combo.split('').join(' ')+'</span>'
       +'</div>';
   });
 
   document.getElementById('resultados').classList.add('visible');
-  setTimeout(function(){ document.getElementById('resultados').scrollIntoView({behavior:'smooth',block:'start'}); },80);
-}
-
-function renderRankingTend(frec, tendSet){
-  var max=Math.max.apply(null,[0,1,2,3,4,5,6,7,8,9].map(function(n){return frec[n];}));
-  var orden=[0,1,2,3,4,5,6,7,8,9].sort(function(a,b){return frec[b]!==frec[a]?frec[b]-frec[a]:a-b;});
-  var html='';
-  orden.forEach(function(n){
-    var pct=max>0?(frec[n]/max*100):0;
-    var es=tendSet.has(n);
-    html+='<div class="frio-row">'
-      +'<span class="frio-num" style="'+(es?'color:var(--hot)':'')+'">'+n+'</span>'
-      +'<div class="frio-bar-wrap"><div class="frio-bar" style="width:'+pct.toFixed(1)+'%;background:'+(es?'var(--hot)':'var(--border)')+'"></div></div>'
-      +'<div class="frio-info"><strong style="'+(es?'color:var(--hot)':'')+'">'+frec[n]+'</strong> '+(frec[n]===1?'vez':'veces')
-      +(es?'<br><span style="color:var(--hot);font-size:.6rem">★ tendencia</span>':'')+'</div>'
-      +'</div>';
-  });
-  document.getElementById('rankingTend').innerHTML=html;
-}
-
-function renderRankingFrio(frec, frioSet){
-  var max=Math.max.apply(null,[0,1,2,3,4,5,6,7,8,9].map(function(n){return frec[n];}));
-  var orden=[0,1,2,3,4,5,6,7,8,9].sort(function(a,b){return frec[a]!==frec[b]?frec[a]-frec[b]:a-b;});
-  var html='';
-  orden.forEach(function(n){
-    var pct=max>0?(frec[n]/max*100):0;
-    var es=frioSet.has(n);
-    html+='<div class="frio-row">'
-      +'<span class="frio-num" style="'+(es?'color:var(--cold)':'')+'">'+n+'</span>'
-      +'<div class="frio-bar-wrap"><div class="frio-bar" style="width:'+pct.toFixed(1)+'%;background:'+(es?'var(--cold2)':'var(--border)')+'"></div></div>'
-      +'<div class="frio-info"><strong style="'+(es?'color:var(--cold)':'')+'">'+frec[n]+'</strong> '+(frec[n]===1?'vez':'veces')
-      +(es?'<br><span style="color:var(--cold);font-size:.6rem">★ frío</span>':'')+'</div>'
-      +'</div>';
-  });
-  document.getElementById('rankingFrio').innerHTML=html;
-}
-
-function mostrarRanking(tipo){
-  document.getElementById('rankingTend').style.display=tipo==='tend'?'block':'none';
-  document.getElementById('rankingFrio').style.display=tipo==='frio'?'block':'none';
-  document.getElementById('rtabTend').classList.toggle('active',tipo==='tend');
-  document.getElementById('rtabFrio').classList.toggle('active',tipo==='frio');
+  setTimeout(function(){document.getElementById('resultados').scrollIntoView({behavior:'smooth',block:'start'});},80);
 }
 
 // CAPTURA
@@ -456,10 +385,11 @@ function renderCap(){
   cap.forEach(function(c){
     var fp=c.fecha.split('-');
     var fStr=parseInt(fp[2])+'/'+parseInt(fp[1])+'/'+fp[0].slice(2);
+    var combo=c.n1+''+c.n2+''+c.n3+''+c.n4+''+c.n5;
     lista.innerHTML+='<div class="cap-row">'
       +'<span class="cap-hor">'+c.horario+'</span>'
       +'<span class="cap-fecha">'+fStr+'</span>'
-      +'<div class="cap-nums">'+[c.n1,c.n2,c.n3,c.n4,c.n5].map(function(n){return '<div class="cap-n">'+n+'</div>';}).join('')+'</div>'
+      +'<span class="cap-combo">'+combo.split('').join(' ')+'</span>'
       +'<button class="btn-del" onclick="borrar('+c.ts+')">✕</button>'
       +'</div>';
   });

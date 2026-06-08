@@ -122,6 +122,38 @@ header p{color:var(--muted);font-size:.75rem;margin-top:6px;letter-spacing:1.5px
 .resultados{display:none}
 .resultados.visible{display:block}
 .sug-nota{text-align:center;font-size:.68rem;color:var(--muted);margin:8px 0 4px;line-height:1.5}
+
+/* ── PATRONES ── */
+.heat-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-bottom:6px}
+.heat-cell{aspect-ratio:1;border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;border:1px solid var(--border);position:relative;background:var(--surface)}
+.heat-cell .hc-n{font-family:'Bebas Neue',sans-serif;font-size:1.15rem;line-height:1}
+.heat-cell .hc-p{font-size:.52rem;color:var(--muted);margin-top:1px}
+.heat-leyenda{display:flex;align-items:center;justify-content:center;gap:8px;font-size:.6rem;color:var(--muted);margin-top:8px}
+.heat-bar{height:8px;width:90px;border-radius:4px;background:linear-gradient(90deg,#3070cc,#2a2a3a,#ff7040)}
+
+.metric-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;margin-bottom:12px}
+.metric-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px;flex-wrap:wrap;gap:4px}
+.metric-titulo{font-size:.7rem;letter-spacing:1px;text-transform:uppercase;color:var(--purple);font-weight:600}
+.metric-dato{font-size:.68rem;color:var(--muted)}
+.metric-dato strong{color:var(--text)}
+
+.atraso-row{display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.03)}
+.atraso-row:last-child{border-bottom:none}
+.atraso-n{width:30px;height:30px;border-radius:50%;background:rgba(160,96,255,.1);border:1px solid var(--purple2);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:1rem;color:var(--purple)}
+.atraso-bar-wrap{flex:1;background:rgba(255,255,255,.05);border-radius:4px;height:6px;overflow:hidden}
+.atraso-bar{height:100%;border-radius:4px;background:var(--purple)}
+.atraso-val{font-size:.68rem;color:var(--muted);min-width:78px;text-align:right}
+.atraso-val strong{color:var(--purple)}
+
+.dist-row{display:flex;align-items:center;gap:8px;padding:4px 0}
+.dist-label{font-size:.7rem;color:var(--muted);min-width:52px}
+.dist-bar-wrap{flex:1;background:rgba(255,255,255,.05);border-radius:4px;height:14px;overflow:hidden;position:relative}
+.dist-bar{height:100%;border-radius:4px;display:flex;align-items:center;padding-left:6px;font-size:.6rem;color:#fff;white-space:nowrap}
+.dist-bar.par{background:linear-gradient(90deg,var(--cold2),var(--cold))}
+.dist-bar.impar{background:linear-gradient(90deg,var(--hot2),var(--hot))}
+.dist-bar.suma{background:linear-gradient(90deg,var(--purple2),var(--purple))}
+.dist-bar.moda{background:linear-gradient(90deg,var(--green2),var(--green))}
+.dist-pct{font-size:.62rem;color:var(--muted);min-width:60px;text-align:right}
 </style>
 
 <script>
@@ -170,6 +202,7 @@ header p{color:var(--muted);font-size:.75rem;margin-top:6px;letter-spacing:1.5px
 
 <div class="tabs">
   <button class="tab active" onclick="switchTab('analizar')" id="tabAnalizar">📊 Analizar</button>
+  <button class="tab" onclick="switchTab('patrones')" id="tabPatrones">🔢 Patrones</button>
   <button class="tab" onclick="switchTab('estadistica')" id="tabEstadistica">📈 Chi²</button>
   <button class="tab" onclick="switchTab('capturar')" id="tabCapturar">➕ Capturar</button>
   <button class="tab" onclick="switchTab('historial')" id="tabHistorial">📋 Registros</button>
@@ -240,6 +273,68 @@ header p{color:var(--muted);font-size:.75rem;margin-top:6px;letter-spacing:1.5px
       ℹ️ <strong>Chi² &gt; 40.11</strong> indica posible sesgo (27 grados de libertad, 95% confianza).<br>
       Cada número debería salir <strong>3.571%</strong> si el juego fuera perfectamente aleatorio.<br>
       Un sesgo NO garantiza predicciones — solo indica irregularidad histórica.
+    </div>
+  </div>
+</div>
+
+<!-- PATRONES -->
+<div id="panelPatrones" style="display:none">
+  <div class="card">
+    <label>Selecciona el sorteo</label>
+    <div class="sorteo-grid" id="patSorteoGrid">
+      <button class="sorteo-btn" data-s="S1">Sorteo 1</button>
+      <button class="sorteo-btn" data-s="S2">Sorteo 2</button>
+    </div>
+    <button class="btn-primary" id="btnPatrones" disabled>VER PATRONES</button>
+  </div>
+
+  <div id="patResultados" style="display:none">
+    <div class="seccion-titulo">🌡️ Mapa de calor — <span id="labelPat"></span></div>
+    <div class="metric-card">
+      <div id="heatGrid" class="heat-grid"></div>
+      <div class="heat-leyenda">Menos <span class="heat-bar"></span> Más · % de aparición histórica</div>
+    </div>
+
+    <div class="seccion-titulo">🥶 Números atrasados (sequía actual)</div>
+    <div class="metric-card">
+      <div class="metric-head">
+        <span class="metric-titulo">Sorteos sin aparecer</span>
+        <span class="metric-dato" id="atrasoNota"></span>
+      </div>
+      <div id="listaAtrasos"></div>
+    </div>
+
+    <div class="seccion-titulo">⚖️ Par / Impar por sorteo</div>
+    <div class="metric-card">
+      <div class="metric-head">
+        <span class="metric-titulo">¿Cuántos impares suelen salir?</span>
+        <span class="metric-dato" id="parImparNota"></span>
+      </div>
+      <div id="distParImpar"></div>
+    </div>
+
+    <div class="seccion-titulo">📐 Alto / Bajo por sorteo</div>
+    <div class="metric-card">
+      <div class="metric-head">
+        <span class="metric-titulo" id="altoBajoTitulo">Bajos vs Altos</span>
+        <span class="metric-dato" id="altoBajoNota"></span>
+      </div>
+      <div id="distAltoBajo"></div>
+    </div>
+
+    <div class="seccion-titulo">➕ Suma de los 5 números</div>
+    <div class="metric-card">
+      <div class="metric-head">
+        <span class="metric-titulo">Rango donde cae la suma</span>
+        <span class="metric-dato" id="sumaNota"></span>
+      </div>
+      <div id="distSuma"></div>
+    </div>
+
+    <div class="disclaimer">
+      ⚠️ <strong>Importante:</strong> que un número esté "atrasado" NO lo hace más probable —
+      el azar no tiene memoria (eso se llama <em>falacia del jugador</em>). Estas métricas
+      describen el historial; no predicen el futuro. Juega con responsabilidad.
     </div>
   </div>
 </div>
@@ -414,7 +509,7 @@ document.getElementById('capFecha').value=hoy.toISOString().slice(0,10);
 
 // ── TABS ──────────────────────────────────────────────────────────────────
 function switchTab(tab){
-  ['analizar','estadistica','capturar','historial'].forEach(function(t){
+  ['analizar','patrones','estadistica','capturar','historial'].forEach(function(t){
     var p=document.getElementById('panel'+t.charAt(0).toUpperCase()+t.slice(1));
     if(p) p.style.display=t===tab?'block':'none';
     var tb=document.getElementById('tab'+t.charAt(0).toUpperCase()+t.slice(1));
@@ -529,6 +624,179 @@ document.getElementById('btnEstadistica').addEventListener('click',function(){
   renderChi2Bloque(sorteos,'chi2Detalle');
   document.getElementById('estResultados').style.display='block';
   setTimeout(function(){document.getElementById('estResultados').scrollIntoView({behavior:'smooth',block:'start'});},80);
+});
+
+// ── PATRONES ──────────────────────────────────────────────────────────────
+// Parámetros del juego (Chispazo: 5 números del 1 al 28)
+var P_MIN=1, P_MAX=28, P_K=5;
+
+function numerosDe(s){ var a=[]; for(var j=1;j<=P_K;j++) a.push(s[j]); return a; }
+
+// Sorteos desde la última aparición de cada número
+function calcularAtrasos(sorteos){
+  var ultimo={};
+  for(var n=P_MIN;n<=P_MAX;n++) ultimo[n]=null;
+  for(var i=0;i<sorteos.length;i++)
+    numerosDe(sorteos[i]).forEach(function(n){ ultimo[n]=i; });
+  var total=sorteos.length, res=[];
+  for(var n=P_MIN;n<=P_MAX;n++){
+    var atraso = ultimo[n]===null ? total : (total-1-ultimo[n]);
+    res.push({n:n, atraso:atraso});
+  }
+  return res;
+}
+
+// Distribución de cuántos impares trae cada sorteo
+function distribParImpar(sorteos){
+  var dist={}, sumaImp=0;
+  for(var k=0;k<=P_K;k++) dist[k]=0;
+  sorteos.forEach(function(s){
+    var imp=numerosDe(s).filter(function(n){return n%2===1;}).length;
+    dist[imp]++; sumaImp+=imp;
+  });
+  return {dist:dist, promImpar:sumaImp/sorteos.length, total:sorteos.length};
+}
+
+// Distribución alto/bajo (mitad inferior vs superior del rango)
+function distribAltoBajo(sorteos){
+  var corte=Math.floor((P_MIN+P_MAX)/2); // 1–14 bajo, 15–28 alto
+  var dist={}, sumaAlto=0;
+  for(var k=0;k<=P_K;k++) dist[k]=0;
+  sorteos.forEach(function(s){
+    var alto=numerosDe(s).filter(function(n){return n>corte;}).length;
+    dist[alto]++; sumaAlto+=alto;
+  });
+  return {dist:dist, promAlto:sumaAlto/sorteos.length, total:sorteos.length, corte:corte};
+}
+
+// Suma de los números por sorteo + histograma por rangos
+function distribSuma(sorteos){
+  var sumas=sorteos.map(function(s){ return numerosDe(s).reduce(function(a,b){return a+b;},0); });
+  var min=Math.min.apply(null,sumas), max=Math.max.apply(null,sumas);
+  var avg=sumas.reduce(function(a,b){return a+b;},0)/sumas.length;
+  var NB=6, ancho=Math.max(1,Math.ceil((max-min+1)/NB));
+  var bins=[];
+  for(var b=0;b<NB;b++) bins.push({lo:min+b*ancho, hi:min+(b+1)*ancho-1, cnt:0});
+  sumas.forEach(function(v){
+    var idx=Math.min(NB-1, Math.floor((v-min)/ancho));
+    bins[idx].cnt++;
+  });
+  return {min:min, max:max, avg:avg, bins:bins, total:sumas.length};
+}
+
+// ── RENDER PATRONES ──
+function renderHeat(sorteos){
+  var r=chiCuadrada(sorteos);
+  var vals=[];
+  for(var n=P_MIN;n<=P_MAX;n++) vals.push(r.pcts[n]);
+  var mn=Math.min.apply(null,vals), mx=Math.max.apply(null,vals);
+  var html='';
+  for(var n=P_MIN;n<=P_MAX;n++){
+    var pct=r.pcts[n];
+    var t=mx>mn?(pct-mn)/(mx-mn):0.5; // 0=frío, 1=caliente
+    // interpola azul(frío) → gris → naranja(caliente)
+    var col = t<0.5
+      ? 'rgba(96,160,255,'+(0.10+(0.5-t)*0.7).toFixed(2)+')'
+      : 'rgba(255,112,64,'+(0.10+(t-0.5)*0.7).toFixed(2)+')';
+    var bd  = t<0.5 ? 'var(--cold2)' : t>0.5 ? 'var(--hot2)' : 'var(--border)';
+    html+='<div class="heat-cell" style="background:'+col+';border-color:'+bd+'">'
+      +'<span class="hc-n">'+n+'</span><span class="hc-p">'+pct.toFixed(1)+'%</span></div>';
+  }
+  document.getElementById('heatGrid').innerHTML=html;
+}
+
+function renderAtrasos(sorteos){
+  var arr=calcularAtrasos(sorteos).sort(function(a,b){return b.atraso-a.atraso;}).slice(0,8);
+  var maxA=arr[0].atraso||1;
+  var html='';
+  arr.forEach(function(o){
+    var w=(o.atraso/maxA*100).toFixed(0);
+    html+='<div class="atraso-row">'
+      +'<span class="atraso-n">'+o.n+'</span>'
+      +'<div class="atraso-bar-wrap"><div class="atraso-bar" style="width:'+w+'%"></div></div>'
+      +'<span class="atraso-val">hace <strong>'+o.atraso+'</strong> sorteos</span>'
+      +'</div>';
+  });
+  document.getElementById('listaAtrasos').innerHTML=html;
+  document.getElementById('atrasoNota').textContent='Top 8 más atrasados';
+}
+
+function barrasDist(dist, total, cls, etiqueta){
+  var maxC=0;
+  Object.keys(dist).forEach(function(k){ if(dist[k]>maxC) maxC=dist[k]; });
+  var modaK=0;
+  Object.keys(dist).forEach(function(k){ if(dist[k]>dist[modaK]) modaK=k; });
+  var html='';
+  Object.keys(dist).sort(function(a,b){return a-b;}).forEach(function(k){
+    var c=dist[k], pct=total?(c/total*100):0;
+    var w=maxC?(c/maxC*100):0;
+    var esModa=String(k)===String(modaK);
+    html+='<div class="dist-row">'
+      +'<span class="dist-label">'+etiqueta(k)+'</span>'
+      +'<div class="dist-bar-wrap"><div class="dist-bar '+(esModa?'moda':cls)+'" style="width:'+w.toFixed(0)+'%">'+(w>22?pct.toFixed(0)+'%':'')+'</div></div>'
+      +'<span class="dist-pct">'+c.toLocaleString()+' ('+pct.toFixed(0)+'%)</span>'
+      +'</div>';
+  });
+  return html;
+}
+
+function renderParImpar(sorteos){
+  var r=distribParImpar(sorteos);
+  document.getElementById('distParImpar').innerHTML=
+    barrasDist(r.dist, r.total, 'impar', function(k){return k+' impar'+(k==1?'':'es');});
+  document.getElementById('parImparNota').textContent='Promedio: '+r.promImpar.toFixed(1)+' impares';
+}
+
+function renderAltoBajo(sorteos){
+  var r=distribAltoBajo(sorteos);
+  document.getElementById('altoBajoTitulo').textContent='Bajos ('+P_MIN+'–'+r.corte+') vs Altos ('+(r.corte+1)+'–'+P_MAX+')';
+  document.getElementById('distAltoBajo').innerHTML=
+    barrasDist(r.dist, r.total, 'par', function(k){return k+' alto'+(k==1?'':'s');});
+  document.getElementById('altoBajoNota').textContent='Promedio: '+r.promAlto.toFixed(1)+' altos';
+}
+
+function renderSuma(sorteos){
+  var r=distribSuma(sorteos);
+  var maxC=0; r.bins.forEach(function(b){ if(b.cnt>maxC) maxC=b.cnt; });
+  var modaIdx=0; r.bins.forEach(function(b,i){ if(b.cnt>r.bins[modaIdx].cnt) modaIdx=i; });
+  var html='';
+  r.bins.forEach(function(b,i){
+    var pct=r.total?(b.cnt/r.total*100):0, w=maxC?(b.cnt/maxC*100):0;
+    html+='<div class="dist-row">'
+      +'<span class="dist-label">'+b.lo+'–'+b.hi+'</span>'
+      +'<div class="dist-bar-wrap"><div class="dist-bar '+(i===modaIdx?'moda':'suma')+'" style="width:'+w.toFixed(0)+'%">'+(w>22?pct.toFixed(0)+'%':'')+'</div></div>'
+      +'<span class="dist-pct">'+b.cnt.toLocaleString()+' ('+pct.toFixed(0)+'%)</span>'
+      +'</div>';
+  });
+  document.getElementById('distSuma').innerHTML=html;
+  document.getElementById('sumaNota').textContent='Suma promedio: '+r.avg.toFixed(0)+' (min '+r.min+' · max '+r.max+')';
+}
+
+function verPatrones(sorteo){
+  var sorteos=getDatos(sorteo);
+  if(!sorteos.length) return;
+  var labels={'S1':'Sorteo 1','S2':'Sorteo 2'};
+  document.getElementById('labelPat').textContent=labels[sorteo]+' · '+sorteos.length.toLocaleString()+' sorteos';
+  renderHeat(sorteos);
+  renderAtrasos(sorteos);
+  renderParImpar(sorteos);
+  renderAltoBajo(sorteos);
+  renderSuma(sorteos);
+  document.getElementById('patResultados').style.display='block';
+  setTimeout(function(){document.getElementById('patResultados').scrollIntoView({behavior:'smooth',block:'start'});},80);
+}
+
+var sorteoPat=null;
+document.querySelectorAll('#patSorteoGrid .sorteo-btn').forEach(function(btn){
+  btn.addEventListener('click',function(){
+    document.querySelectorAll('#patSorteoGrid .sorteo-btn').forEach(function(b){b.classList.remove('active');});
+    btn.classList.add('active');
+    sorteoPat=btn.dataset.s;
+    document.getElementById('btnPatrones').disabled=false;
+  });
+});
+document.getElementById('btnPatrones').addEventListener('click',function(){
+  if(sorteoPat) verPatrones(sorteoPat);
 });
 
 // ── CAPTURA ───────────────────────────────────────────────────────────────
